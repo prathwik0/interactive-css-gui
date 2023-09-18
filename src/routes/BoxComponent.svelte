@@ -1,14 +1,17 @@
 <script lang="ts">
 	import Box from './BoxComponent.svelte';
-	import { boxAdjust, count, toggle } from './store';
+	import { boxAdjust, toggle } from './store';
 
 	import { smallStack, type FlexInterface, type FlexStackInterface } from './box';
 
 	export let selected: boolean = false;
 	export let stack: FlexStackInterface;
 	export let box: FlexInterface;
+	export let count: number;
 
-	$: if (selected) stack.currentBox = $boxAdjust;
+	// whenever the value of the boxAdjust store changes, we refresh the currentBox to check for any changes
+	$: $boxAdjust, (stack.currentBox = stack.currentBox);
+
 	$: {
 		$toggle, (selected = false);
 	}
@@ -18,7 +21,7 @@
 	 */
 	$: {
 		if (selected === true) {
-			while (stack.children.length < $count) {
+			while (stack.children.length < $boxAdjust.count) {
 				if (stack.children.length === 0) {
 					stack.children = [...stack.children, structuredClone(smallStack)];
 					console.log('run');
@@ -27,7 +30,7 @@
 					console.log('run2');
 				}
 			}
-			while (stack.children.length > $count) {
+			while (stack.children.length > $boxAdjust.count) {
 				stack.children.pop();
 				stack = stack;
 			}
@@ -46,11 +49,12 @@
 
 		setTimeout(() => {
 			// set count to the correct value! You don't want extra children
-			$count = stack.children.length;
-			console.log('$count updated to no. of children -  ' + $count);
+			boxAdjust.set({ currentBox: stack.currentBox, count: stack.children.length });
+			console.log('$count updated to no. of children -  ' + $boxAdjust.count);
 
-			// update the box
-			box = structuredClone(stack.currentBox);
+			// update the box and count
+			box = stack.currentBox;
+			count = stack.children.length;
 
 			selected = true;
 		}, 0);
@@ -68,9 +72,8 @@
             margin: {stack.currentBox.margin.value + stack.currentBox.margin.unit};
             padding: {stack.currentBox.padding.value + stack.currentBox.padding.unit}"
 >
-	<!-- {selected}{$count} -->
 	{#each stack.children as child}
-		<Box stack={child} bind:box />
+		<Box stack={child} bind:box bind:count />
 	{/each}
 </div>
 

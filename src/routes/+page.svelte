@@ -12,11 +12,15 @@
 	import BoxComponent from './BoxComponent.svelte';
 
 	import { smallBox, type FlexInterface, initialFlexBox, type FlexStackInterface, Options } from './box';
-	import { boxAdjust, count, display, unit } from './store';
+	import { boxAdjust, unit } from './store';
 
 	let box: FlexInterface = structuredClone(smallBox);
+	let count = 0;
 
-	$: $boxAdjust = box;
+	$: $boxAdjust = {
+		currentBox: box,
+		count: count,
+	};
 
 	let stack: FlexStackInterface = { currentBox: structuredClone(initialFlexBox), children: [] };
 </script>
@@ -25,22 +29,12 @@
 	<div class="flex flex-grow justify-evenly p-3">
 		<div class="grid grid-cols-1 sm:grid-cols-2 content-normal sm:content-center">
 			<label for="child count" class="text-xs w-min max-w-fit sm:text-sm lg:text-lg">Children&nbsp;:&nbsp;</label>
-			<input id="child count" type="number" bind:value={$count} min="0" max="20" class="inline-block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+			<input id="child count" type="number" bind:value={count} min="0" max="20" class="inline-block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 		</div>
 		<div class="grid grid-cols-1 sm:grid-cols-2 content-normal sm:content-center">
 			<label for="unit" class="text-xs w-min max-w-fit sm:text-sm lg:text-lg">Unit&nbsp;:&nbsp;</label>
 			<select id="unit" bind:value={$unit} class="inline-block max-w-fit max p-2 mb-1 text-xs sm:text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 				{#each Options.unit.options as option}
-					<option value={option}>
-						{option}
-					</option>
-				{/each}
-			</select>
-		</div>
-		<div class="grid grid-cols-1 sm:grid-cols-2 content-normal sm:content-center">
-			<label for="display" class="text-xs w-min max-w-fit sm:text-sm lg:text-lg">Display&nbsp;:&nbsp;</label>
-			<select id="display" bind:value={$display} class="inline-block max-w-fit max p-2 mb-1 text-xs sm:text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-				{#each Options.display.options as option}
 					<option value={option}>
 						{option}
 					</option>
@@ -71,5 +65,5 @@
 <hr class="m-2" />
 
 <div class="flex justify-center">
-	<BoxComponent {stack} bind:box />
+	<BoxComponent {stack} bind:box bind:count />
 </div>
