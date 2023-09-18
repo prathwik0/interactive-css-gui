@@ -22,7 +22,7 @@ export interface BoxInterface {
 	};
 }
 
-export interface FlexBoxInterface extends BoxInterface {
+export interface FlexInterface extends BoxInterface {
 	'flex-direction'?: string;
 	'flex-wrap'?: string;
 	'justify-content'?: string;
@@ -30,9 +30,9 @@ export interface FlexBoxInterface extends BoxInterface {
 	'align-content'?: string;
 }
 
-export interface FlexBoxStackInterface {
-	boxInfo: FlexBoxInterface;
-	children: FlexBoxStackInterface[];
+export interface FlexStackInterface {
+	currentBox: FlexInterface;
+	children: FlexStackInterface[];
 }
 
 /* ---------------------------------------------------------------------- */
@@ -88,8 +88,8 @@ export const initialFlexBox = {
 	},
 };
 
-export const smallStack: FlexBoxStackInterface = {
-	boxInfo: structuredClone(initialFlexBox),
+export const smallStack: FlexStackInterface = {
+	currentBox: structuredClone(initialFlexBox),
 	children: [],
 };
 

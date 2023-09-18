@@ -1,18 +1,24 @@
 <script lang="ts">
+	/*
+	 * Terminology
+	 * Box: A single box with it's properties
+	 * Stack: Recursive stack of boxes at any level
+	 */
+
 	import ThemeToggle from '$lib/components/theme/ThemeToggle.svelte';
 
 	import CSSPropertySlider from './CSSPropertySlider.svelte';
 	import CSSProperty from './CSSProperty.svelte';
 	import BoxComponent from './BoxComponent.svelte';
 
-	import { smallBox, type FlexBoxInterface, initialFlexBox, type FlexBoxStackInterface, Options } from './box';
+	import { smallBox, type FlexInterface, initialFlexBox, type FlexStackInterface, Options } from './box';
 	import { boxAdjust, count, display, unit } from './store';
 
-	let box: FlexBoxInterface = structuredClone(smallBox);
+	let box: FlexInterface = structuredClone(smallBox);
 
 	$: $boxAdjust = box;
 
-	let stack: FlexBoxStackInterface = { boxInfo: structuredClone(initialFlexBox), children: [] };
+	let stack: FlexStackInterface = { currentBox: structuredClone(initialFlexBox), children: [] };
 </script>
 
 <div class="flex justify-between">
