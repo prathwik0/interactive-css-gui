@@ -1,38 +1,13 @@
 <script lang="ts">
 	import Box from './BoxComponent.svelte';
-	import { boxAdjust, count, toggle } from './store';
+	import type { FlexStackInterface } from './box';
+	import { stackUpdate } from './store';
 
-	import { smallStack, type FlexInterface, type FlexStackInterface } from './box';
-
-	export let selected: boolean = false;
 	export let stack: FlexStackInterface;
-	export let box: FlexInterface;
+	export let adjusting: FlexStackInterface;
 
-	$: if (selected) stack.currentBox = $boxAdjust;
-	$: {
-		$toggle, (selected = false);
-	}
-
-	/*
-	 * Adjust the number of children
-	 */
-	$: {
-		if (selected === true) {
-			while (stack.children.length < $count) {
-				if (stack.children.length === 0) {
-					stack.children = [...stack.children, structuredClone(smallStack)];
-					console.log('run');
-				} else {
-					stack.children = [...stack.children, structuredClone(stack.children[stack.children.length - 1])];
-					console.log('run2');
-				}
-			}
-			while (stack.children.length > $count) {
-				stack.children.pop();
-				stack = stack;
-			}
-		}
-	}
+	// whenever the value of the stackUpdate store changes, we refresh the currentBox to check for any changes
+	$: $stackUpdate, (stack.currentBox = stack.currentBox);
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -41,19 +16,7 @@
 		console.log('keydown');
 	}}
 	on:click|preventDefault|stopPropagation={() => {
-		// toggle to inform other boxes to unselect
-		$toggle = !$toggle;
-
-		setTimeout(() => {
-			// set count to the correct value! You don't want extra children
-			$count = stack.children.length;
-			console.log('$count updated to no. of children -  ' + $count);
-
-			// update the box
-			box = structuredClone(stack.currentBox);
-
-			selected = true;
-		}, 0);
+		adjusting = stack;
 	}}
 	class="containerbox"
 	style="display: {stack.currentBox.display}; 
@@ -68,9 +31,8 @@
             margin: {stack.currentBox.margin.value + stack.currentBox.margin.unit};
             padding: {stack.currentBox.padding.value + stack.currentBox.padding.unit}"
 >
-	<!-- {selected}{$count} -->
 	{#each stack.children as child}
-		<Box stack={child} bind:box />
+		<Box stack={child} bind:adjusting />
 	{/each}
 </div>
 

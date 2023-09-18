@@ -32,6 +32,7 @@ export interface FlexInterface extends BoxInterface {
 
 export interface FlexStackInterface {
 	currentBox: FlexInterface;
+	count: number;
 	children: FlexStackInterface[];
 }
 
@@ -90,6 +91,7 @@ export const initialFlexBox = {
 
 export const smallStack: FlexStackInterface = {
 	currentBox: structuredClone(initialFlexBox),
+	count: 0,
 	children: [],
 };
 
